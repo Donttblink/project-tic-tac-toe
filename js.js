@@ -37,7 +37,15 @@ function Gameboard() {
     console.table(values);
   };
 
-  return { getBoard, placeMark, printBoard };
+  const resetBoard = () => {
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < columns; c++) {
+        board[r][c].addMark("");
+      }
+    }
+  };
+
+  return { getBoard, placeMark, printBoard, resetBoard };
 }
 
 function GameController(
@@ -117,6 +125,17 @@ function GameController(
     return hasWon;
   };
 
+  const tie = () => {
+    const grid = board.getBoard();
+    const isTie = grid.every((row) =>
+      row.every((cell) => cell.getValue() !== ""),
+    );
+    if (isTie) {
+      console.log("The board is full. Cat's Game.");
+    }
+    return isTie;
+  };
+
   const playRound = (row, column) => {
     console.log(`${activePlayer.name} marks square ${row}, ${column}..`);
 
@@ -126,10 +145,22 @@ function GameController(
       return;
     }
 
-    const gameOver = () => {
-      if (hasWon) {
-      }
-    };
+    const gameOver = won();
+    if (gameOver) {
+      board.printBoard();
+      board.resetBoard();
+      board.printBoard();
+      console.log(`${activePlayer.name} gets first turn for winning.`);
+      return;
+    }
+
+    const gameTied = tie();
+    if (gameTied) {
+      board.printBoard();
+      board.resetBoard();
+      return;
+    }
+
     switchTurn();
     printNewRound();
   };
