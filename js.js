@@ -158,6 +158,7 @@ function GameController(
     if (gameTied) {
       board.printBoard();
       board.resetBoard();
+      board.printBoard();
       return;
     }
 
@@ -169,8 +170,6 @@ function GameController(
   return { playRound, getActivePlayer };
 }
 
-const game = GameController();
-
-/* [00 01 02], [10 11 12], [20 21 22]
-   [00 10 20], [01 11 21], [02 12 22]
-   [00 11 22], [02 11 20]  */
+function ScreenController() {
+  const game = GameController();
+}
