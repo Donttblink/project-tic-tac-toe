@@ -67,6 +67,11 @@ function GameController(
 
   const getActivePlayer = () => activePlayer;
 
+  const setPlayerNames = (one, two) => {
+    players[0].name = one;
+    players[1].name = two;
+  };
+
   const printNewRound = () => {
     board.printBoard();
     console.log(`${activePlayer.name}'s turn.`);
@@ -169,6 +174,7 @@ function GameController(
     getActivePlayer,
     getBoard: board.getBoard,
     resetBoard: board.resetBoard,
+    setPlayerNames,
   };
 }
 
@@ -178,6 +184,9 @@ function ScreenController() {
   const playerTurnDiv = document.querySelector(".turn");
   const boardDiv = document.querySelector(".board");
   const newGameBtn = document.querySelector(".new-game");
+  const playerNameForm = document.querySelector(".player-names");
+  const playerOneName = document.querySelector(".player-one-name");
+  const playerTwoName = document.querySelector(".player-two-name");
 
   const updateScreen = (result) => {
     boardDiv.textContent = "";
@@ -217,6 +226,7 @@ function ScreenController() {
 
     if (result === "win" || result === "tie") {
       gameOver = true;
+      playerNameForm.classList.remove("hidden");
     }
 
     updateScreen(result);
@@ -225,6 +235,11 @@ function ScreenController() {
   function newGameHandler() {
     gameOver = false;
     game.resetBoard();
+    playerNameForm.classList.add("hidden");
+    game.setPlayerNames(
+      playerOneName.value || "Player X",
+      playerTwoName.value || "Player O",
+    );
     updateScreen();
   }
 

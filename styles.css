@@ -93,3 +93,16 @@ body {
   background: lightsalmon;
   cursor: pointer;
 }
+.player-names {
+  &.hidden {
+    display: none;
+  }
+  .form-data {
+    display: flex;
+    gap: 80px;
+    .form-row {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
