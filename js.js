@@ -148,8 +148,6 @@ function GameController(
     const gameOver = won();
     if (gameOver) {
       board.printBoard();
-      board.resetBoard();
-      board.printBoard();
       console.log(`${activePlayer.name} gets first turn for winning.`);
       return "win";
     }
@@ -157,8 +155,7 @@ function GameController(
     const gameTied = tie();
     if (gameTied) {
       board.printBoard();
-      board.resetBoard();
-      board.printBoard();
+      switchTurn();
       return "tie";
     }
 
@@ -167,21 +164,36 @@ function GameController(
   };
 
   printNewRound();
-  return { playRound, getActivePlayer, getBoard: board.getBoard };
+  return {
+    playRound,
+    getActivePlayer,
+    getBoard: board.getBoard,
+    resetBoard: board.resetBoard,
+  };
 }
 
 function ScreenController() {
   const game = GameController();
+  let gameOver = true;
   const playerTurnDiv = document.querySelector(".turn");
   const boardDiv = document.querySelector(".board");
+  const newGameBtn = document.querySelector(".new-game");
 
-  const updateScreen = () => {
+  const updateScreen = (result) => {
     boardDiv.textContent = "";
 
     const board = game.getBoard();
     const activePlayer = game.getActivePlayer();
 
-    playerTurnDiv.textContent = `${activePlayer.name}'s turn. Pick your cell!`;
+    if (result === "win") {
+      playerTurnDiv.textContent = `${activePlayer.name} got three in a row! They Reign Supreme!`;
+    } else if (result === "tie") {
+      playerTurnDiv.textContent = "The board is full. Cat's game.";
+    } else if (result === "start") {
+      playerTurnDiv.textContent = "Press New Game to Start";
+    } else {
+      playerTurnDiv.textContent = `${activePlayer.name}'s turn. Pick your cell!`;
+    }
 
     board.forEach((row, rowIndex) => {
       row.forEach((cell, colIndex) => {
@@ -198,22 +210,27 @@ function ScreenController() {
   function clickHandlerBoard(e) {
     const selectedCellRow = e.target.dataset.row;
     const selectedCellColumn = e.target.dataset.column;
-    const activePlayer = game.getActivePlayer();
-    const board = game.getBoard();
 
-    if (!selectedCellRow && !selectedCellColumn) return;
+    if (gameOver || (!selectedCellRow && !selectedCellColumn)) return;
 
     const result = game.playRound(selectedCellRow, selectedCellColumn);
 
-    updateScreen();
-    if (result === "win") {
-      // update board, show active player as winner, disable click
-      playerTurnDiv.textContent = `${activePlayer.name} has 3 in a row. They Win!`;
+    if (result === "win" || result === "tie") {
+      gameOver = true;
     }
-  }
-  boardDiv.addEventListener("click", clickHandlerBoard);
 
-  updateScreen();
+    updateScreen(result);
+  }
+
+  function newGameHandler() {
+    gameOver = false;
+    game.resetBoard();
+    updateScreen();
+  }
+
+  boardDiv.addEventListener("click", clickHandlerBoard);
+  newGameBtn.addEventListener("click", newGameHandler);
+  updateScreen("start");
 }
 
 ScreenController();
