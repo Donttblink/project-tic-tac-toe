@@ -151,7 +151,7 @@ function GameController(
       board.resetBoard();
       board.printBoard();
       console.log(`${activePlayer.name} gets first turn for winning.`);
-      return;
+      return "win";
     }
 
     const gameTied = tie();
@@ -159,7 +159,7 @@ function GameController(
       board.printBoard();
       board.resetBoard();
       board.printBoard();
-      return;
+      return "tie";
     }
 
     switchTurn();
@@ -198,10 +198,18 @@ function ScreenController() {
   function clickHandlerBoard(e) {
     const selectedCellRow = e.target.dataset.row;
     const selectedCellColumn = e.target.dataset.column;
+    const activePlayer = game.getActivePlayer();
+    const board = game.getBoard();
+
     if (!selectedCellRow && !selectedCellColumn) return;
 
-    game.playRound(selectedCellRow, selectedCellColumn);
+    const result = game.playRound(selectedCellRow, selectedCellColumn);
+
     updateScreen();
+    if (result === "win") {
+      // update board, show active player as winner, disable click
+      playerTurnDiv.textContent = `${activePlayer.name} has 3 in a row. They Win!`;
+    }
   }
   boardDiv.addEventListener("click", clickHandlerBoard);
 
